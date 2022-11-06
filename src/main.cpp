@@ -44,6 +44,9 @@ void processMessage(SKSE::MessagingInterface::Message* a_msg)
         case SKSE::MessagingInterface::kPostLoadGame:
             logger::debug("Game: save loaded");
 
+            if (Config::getSingleton()->loaded())
+                Config::getSingleton()->addToggleSpell();
+
             break;
         default:
             break;

@@ -18,9 +18,9 @@ public:
         REL::Relocation<std::uintptr_t> ArrowProjectileVtbl{RE::VTABLE_ArrowProjectile[0]};     // 1676318
         REL::Relocation<std::uintptr_t> MissileProjectileVtbl{RE::VTABLE_MissileProjectile[0]}; // 167AE78
         REL::Relocation<std::uintptr_t> BeamProjectileVtbl{RE::VTABLE_BeamProjectile[0]};       // 1677660
-        _GetLinearVelocityProjectile = ProjectileVtbl.write_vfunc(0x86, GetLinearVelocityProjectile);
-        _GetLinearVelocityArrow      = ArrowProjectileVtbl.write_vfunc(0x86, GetLinearVelocityArrow);
-        _GetLinearVelocityMissile    = MissileProjectileVtbl.write_vfunc(0x86, GetLinearVelocityMissile);
+        // _GetLinearVelocityProjectile = ProjectileVtbl.write_vfunc(0x86, GetLinearVelocityProjectile);
+        _GetLinearVelocityArrow   = ArrowProjectileVtbl.write_vfunc(0x86, GetLinearVelocityArrow);
+        _GetLinearVelocityMissile = MissileProjectileVtbl.write_vfunc(0x86, GetLinearVelocityMissile);
         logger::info("Hook installed!");
     }
 

@@ -12,7 +12,7 @@ inline void slowdown()
     *time_mult_2 = *time_mult_1;
 }
 
-inline void revert_slowdown()
+inline void revertSlowdown()
 {
     REL::Relocation<float*> time_mult_1{RELOCATION_ID(511882, 388442)};
     REL::Relocation<float*> time_mult_2{RELOCATION_ID(511883, 388443)};
@@ -20,6 +20,22 @@ inline void revert_slowdown()
     if (*time_mult_1 > 1.f)
         *time_mult_1 = 1.f;
     *time_mult_2 = *time_mult_1;
+}
+
+inline void logProjectile(RE::Projectile* a_this)
+{
+    auto base = a_this->GetBaseObject();
+    logger::debug("Projectile Name: {} ({:08x} | {})",
+                  a_this->GetName(), base->GetFormID(), base->GetFile()->fileName);
+    auto shooter_ref = a_this->GetProjectileRuntimeData().shooter;
+    if (shooter_ref && shooter_ref.get() && shooter_ref.get().get())
+    {
+        auto shooter = shooter_ref.get().get();
+        logger::debug("Source: {}",
+                      shooter->GetName() ? shooter->GetName() : "");
+    }
+    logger::debug("Flags: {:032b}",
+                  a_this->GetProjectileRuntimeData().flags);
 }
 
 void ProjectileHook::Process(RE::Projectile* a_this, bool is_arrow)
@@ -44,10 +60,17 @@ void ProjectileHook::Process(RE::Projectile* a_this, bool is_arrow)
         return;
     auto pos = spine->world.translate;
 
-    // distance check
-    auto dist = a_this->GetPosition().GetDistance(pos);
-    if (dist > config->detect_range)
+    // ragdoll check
+    if (player->IsInRagdollState())
         return;
+
+    // distance check
+    auto velocity = a_this->GetProjectileRuntimeData().linearVelocity;
+    auto dist     = a_this->GetPosition().GetDistance(pos);
+    if ((dist > config->detect_range) && (dist > config->detect_time * velocity.Length()))
+        return;
+
+    // logProjectile(a_this);
 
     // cooldown check
     if (player->AsMagicTarget()->HasMagicEffect(config->proj_cooldown_fx))
@@ -62,6 +85,10 @@ void ProjectileHook::Process(RE::Projectile* a_this, bool is_arrow)
     if (config->req_perk && !player->HasPerk(config->req_perk))
         return;
 
+    // toggling check
+    if (!player->HasSpell(config->proj_enabled_spell))
+        return;
+
     // proj type check
     if (is_arrow && !config->sense_arrow)
         return;
@@ -69,7 +96,6 @@ void ProjectileHook::Process(RE::Projectile* a_this, bool is_arrow)
         return;
 
     // min speed check
-    auto velocity = a_this->GetProjectileRuntimeData().linearVelocity;
     if (velocity.Length() < config->min_speed)
         return;
 
@@ -84,13 +110,14 @@ void ProjectileHook::Process(RE::Projectile* a_this, bool is_arrow)
     auto shooter = shooter_ref.get().get()->As<RE::Actor>();
     if (!shooter)
         return;
-    if (shooter && !shooter->IsHostileToActor(player))
+    if (!shooter->IsHostileToActor(player))
         return;
 
     // angle check
-    auto diff_vector = pos - a_this->GetPosition();
-    auto angle       = std::acos(velocity.Dot(diff_vector) / velocity.Length() / diff_vector.Length());
-    if (angle > config->detect_angle * std::_Pi / 180)
+    auto diff_vector    = pos - a_this->GetPosition();
+    auto expected_angle = std::asin(config->detect_margin / dist);
+    auto angle          = std::acos(velocity.Dot(diff_vector) / velocity.Length() / diff_vector.Length());
+    if (angle > expected_angle)
         return;
 
     // logger::info("los check! {}", angle * 180 / std::_Pi);
@@ -99,6 +126,10 @@ void ProjectileHook::Process(RE::Projectile* a_this, bool is_arrow)
     //     return;
 
     // apply spell
+    logger::debug("Triggering!");
+    if (spdlog::get_level() < spdlog::level::info)
+        logProjectile(a_this);
+
     player->GetMagicCaster(RE::MagicSystem::CastingSource::kInstant)
         ->CastSpellImmediate(config->proj_spell, false, player->AsReference(), 1.f, false, 0.f, nullptr);
 
@@ -108,7 +139,7 @@ void ProjectileHook::Process(RE::Projectile* a_this, bool is_arrow)
     slowdown();
     slowdown_thread = std::jthread([=]() {
         std::this_thread::sleep_for(std::chrono::milliseconds(static_cast<int>(config->duration * 1000)));
-        revert_slowdown();
+        revertSlowdown();
     });
     slowdown_thread.detach();
 }
