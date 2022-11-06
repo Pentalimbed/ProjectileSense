@@ -1,0 +1,23 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg/master/scripts/vcpkg.schema.json",
+    "name": "projectile-sense",
+    "version-string": "1.5.0",
+    "port-version": 0,
+    "description": "",
+    "homepage": "",
+    "license": "MIT",
+    "features": {
+        "plugin": {
+            "description": "Build the SKSE plugin.",
+            "dependencies": [
+                "articuno",
+                "commonlibsse-ng-flatrim",
+                "pcg",
+                "tomlplusplus"
+            ]
+        }
+    },
+    "default-features": [
+        "plugin"
+    ]
+}
