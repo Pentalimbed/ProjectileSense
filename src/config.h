@@ -2,19 +2,24 @@
 
 struct Config
 {
-    bool  sense_arrow       = true;
-    bool  sense_missile     = true;
-    float timescale         = 0.05f;
-    float duration          = 1.f;
-    float cooldown          = 4.f;
-    float detect_range      = 384.f;
-    float detect_time       = 0.1f;
-    float detect_margin     = 256.f;
-    float min_speed         = 2500.f;
+    bool sense_arrow   = true;
+    bool sense_missile = true;
+
+    float timescale = 0.05f;
+    float duration  = 1.f;
+    float cooldown  = 4.f;
+
+    float detect_range  = 384.f;
+    float detect_time   = 0.1f;
+    float detect_margin = 256.f;
+    float min_speed     = 2500.f;
+
     float stamina_cost      = 0.f;
     float magicka_cost      = 0.f;
     float stamina_reduction = 0.f;
     float magicka_reduction = 0.f;
+    float stamina_drain     = 0.f;
+    float magicka_drain     = 0.f;
 
     RE::BGSPerk* req_perk = nullptr;
 

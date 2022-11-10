@@ -65,8 +65,9 @@ void ProjectileHook::Process(RE::Projectile* a_this, bool is_arrow)
         return;
 
     // distance check
-    auto velocity = a_this->GetProjectileRuntimeData().linearVelocity;
-    auto dist     = a_this->GetPosition().GetDistance(pos);
+    auto& runtime_data = a_this->GetProjectileRuntimeData();
+    auto  velocity     = runtime_data.linearVelocity;
+    auto  dist         = a_this->GetPosition().GetDistance(pos);
     if ((dist > config->detect_range) && (dist > config->detect_time * velocity.Length()))
         return;
 
@@ -100,11 +101,15 @@ void ProjectileHook::Process(RE::Projectile* a_this, bool is_arrow)
         return;
 
     // live too long, must smth wrong
-    if (a_this->GetProjectileRuntimeData().livingTime > 60.f)
+    if (runtime_data.livingTime > 60.f)
+        return;
+
+    // potential flag check for buggy dropped arrow (?)
+    if (runtime_data.flags & (1 << 2))
         return;
 
     // shooter is hostile
-    auto shooter_ref = a_this->GetProjectileRuntimeData().shooter;
+    auto shooter_ref = runtime_data.shooter;
     if (!shooter_ref || !shooter_ref.get() || !shooter_ref.get().get())
         return;
     auto shooter = shooter_ref.get().get()->As<RE::Actor>();
@@ -132,6 +137,10 @@ void ProjectileHook::Process(RE::Projectile* a_this, bool is_arrow)
 
     player->GetMagicCaster(RE::MagicSystem::CastingSource::kInstant)
         ->CastSpellImmediate(config->proj_spell, false, player->AsReference(), 1.f, false, 0.f, nullptr);
+
+    // dispeled cooldown fx fix
+    if (!player->AsMagicTarget()->HasMagicEffect(config->proj_cooldown_fx))
+        return;
 
     player->AsActorValueOwner()->RestoreActorValue(RE::ACTOR_VALUE_MODIFIERS::kDamage, RE::ActorValue::kStamina, -config->stamina_cost);
     player->AsActorValueOwner()->RestoreActorValue(RE::ACTOR_VALUE_MODIFIERS::kDamage, RE::ActorValue::kMagicka, -config->magicka_cost);

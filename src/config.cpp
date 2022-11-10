@@ -30,6 +30,8 @@ void Config::init()
         magicka_cost      = tbl["magicka_cost"].value_or(0.f);
         stamina_reduction = tbl["stamina_reduction"].value_or(0.f);
         magicka_reduction = tbl["magicka_reduction"].value_or(0.f);
+        stamina_drain     = tbl["stamina_drain"].value_or(0.f);
+        magicka_drain     = tbl["magicka_drain"].value_or(0.f);
 
         std::string required_perk = tbl["required_perk"].value_or("");
         req_perk                  = RE::TESForm::LookupByEditorID<RE::BGSPerk>(required_perk);
@@ -60,6 +62,8 @@ void Config::apply()
     // reduction
     proj_enabled_spell->effects[0]->effectItem.magnitude = magicka_reduction;
     proj_enabled_spell->effects[1]->effectItem.magnitude = stamina_reduction;
+    proj_enabled_spell->effects[2]->effectItem.magnitude = magicka_drain;
+    proj_enabled_spell->effects[3]->effectItem.magnitude = stamina_drain;
 }
 
 void Config::addToggleSpell()
