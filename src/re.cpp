@@ -93,7 +93,12 @@ void ProjectileHook::Process(RE::Projectile* a_this, bool is_arrow)
     // proj type check
     if (is_arrow && !config->sense_arrow)
         return;
-    if (a_this->IsMissileProjectile() && !config->sense_missile)
+    if (a_this->IsMissileProjectile())
+    {
+        if (!config->sense_missile)
+            return;
+    }
+    else
         return;
 
     // min speed check

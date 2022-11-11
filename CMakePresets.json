@@ -100,6 +100,26 @@
                     "value": "Release"
                 }
             }
+        },
+        {
+            "name": "build-relwithdebinfo-msvc",
+            "inherits": [
+                "base",
+                "vcpkg",
+                "win32-unicode",
+                "x64",
+                "msvc"
+            ],
+            "displayName": "RelWithDebInfo",
+            "description": "Optimized release build with debug info.",
+            "generator": "Visual Studio 17 2022",
+            "binaryDir": "${sourceDir}/build/relwithdebinfo-msvc",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": {
+                    "type": "STRING",
+                    "value": "RelWithDebInfo"
+                }
+            }
         }
     ],
     "buildPresets": [
@@ -116,6 +136,13 @@
             "configuration": "Debug",
             "configurePreset": "build-debug-msvc",
             "description": "Debug build for testing."
+        },
+        {
+            "name": "relwithdebinfo-msvc",
+            "displayName": "RelWithDebInfo (MSVC)",
+            "configuration": "RelWithDebInfo",
+            "configurePreset": "build-relwithdebinfo-msvc",
+            "description": "Optimized release build with debug info."
         }
     ],
     "testPresets": []
