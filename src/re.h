@@ -1,13 +1,5 @@
 #pragma once
 
-// maxsu
-inline int32_t RequestLOS(RE::Actor* a_actor, RE::TESObjectREFR* a_target, float a_viewCone)
-{
-    using func_t = decltype(RequestLOS);
-    static REL::Relocation<func_t> func{RELOCATION_ID(36752, 37768)};
-    return func(a_actor, a_target, a_viewCone);
-}
-
 // Ersh
 class ProjectileHook
 {

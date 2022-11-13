@@ -4,18 +4,26 @@
 static std::mutex   func_mutex;
 static std::jthread slowdown_thread;
 
+// why tho
+template <>
+RE::BGSProjectile* RE::TESForm::As<RE::BGSProjectile, void>() noexcept
+{
+    return const_cast<RE::BGSProjectile*>(
+        static_cast<const RE::TESForm*>(this)->As<RE::BGSProjectile>());
+}
+
 inline void slowdown()
 {
-    REL::Relocation<float*> time_mult_1{RELOCATION_ID(511882, 388442)};
-    REL::Relocation<float*> time_mult_2{RELOCATION_ID(511883, 388443)};
+    REL::Relocation<float*> time_mult_1{REL::VariantID(511882, 388442, 0x1EC5698)};
+    REL::Relocation<float*> time_mult_2{REL::VariantID(511883, 388443, 0x1EC569C)};
     *time_mult_1 *= Config::getSingleton()->timescale;
     *time_mult_2 = *time_mult_1;
 }
 
 inline void revertSlowdown()
 {
-    REL::Relocation<float*> time_mult_1{RELOCATION_ID(511882, 388442)};
-    REL::Relocation<float*> time_mult_2{RELOCATION_ID(511883, 388443)};
+    REL::Relocation<float*> time_mult_1{REL::VariantID(511882, 388442, 0x1EC5698)};
+    REL::Relocation<float*> time_mult_2{REL::VariantID(511883, 388443, 0x1EC569C)};
     *time_mult_1 /= Config::getSingleton()->timescale;
     if (*time_mult_1 > 1.f)
         *time_mult_1 = 1.f;

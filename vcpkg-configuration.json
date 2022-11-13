@@ -7,7 +7,7 @@
             "packages": [
                 "articuno",
                 "bethesda-skyrim-scripts",
-                "commonlibsse-ng-flatrim",
+                "commonlibsse-ng",
                 "gluino",
                 "script-extender-common",
                 "skse"

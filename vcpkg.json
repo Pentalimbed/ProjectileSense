@@ -11,7 +11,7 @@
             "description": "Build the SKSE plugin.",
             "dependencies": [
                 "articuno",
-                "commonlibsse-ng-flatrim",
+                "commonlibsse-ng",
                 "pcg",
                 "tomlplusplus"
             ]
